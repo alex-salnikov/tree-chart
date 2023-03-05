@@ -2,7 +2,7 @@
 
 
 # About
-Renders a tree of nodes as specified via [yaml-file](./conf.yaml).
+Renders a tree of nodes as specified via [yaml-file](./conf.yml).
 
 Based on [treant-js](https://github.com/fperucic/treant-js) library.
 
