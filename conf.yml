@@ -1,0 +1,51 @@
+chart:
+  config:
+    container: "#chart1"
+    rootOrientation:  WEST    # NORTH, EAST, WEST, SOUTH
+    # levelSeparation: 30
+    siblingSeparation:   20
+    subTeeSeparation:    60
+    scrollbar: fancy
+    connectors:
+      type: step # straight, step
+    node:
+      HTMLclass: nodeExample1
+    title: Tree-Chart
+  nodes:
+    root:
+      text:
+        name: Name 1
+        title: Title 1
+        contact: "Phone: 123-456"
+      image: images/1.jpg
+      link:
+        href: http://www.google.com
+        target: _blank
+      # HTMLid: root
+    node2:
+      text:
+         name: Name 2
+         title: Title 2
+      stackChildren: true
+      image: images/2.jpg
+      parent: root
+    node2_1:
+      text:
+         name: Name 2_1
+         title: Title 2_1
+      image: images/2_1.jpg
+      parent: node2
+      HTMLclass: gray
+    node2_2:
+      text:
+         name: Name 2_2
+         title: Title 2_2
+      image: images/2_2.jpg
+      parent: node2
+      HTMLclass: gray
+    node3:
+      text:
+        name: Name 3
+        title: Title 3
+      image: images/3.jpg
+      parent: root

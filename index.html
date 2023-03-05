@@ -1,0 +1,156 @@
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>replit</title>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+	<title>(Tree-Chart)</title>
+    <!-- https://github.com/simonwhitaker/github-fork-ribbon-css -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
+    <style>.github-fork-ribbon:before { background-color: #333; }</style>
+
+    <!-- underscore -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"
+        integrity="sha512-2V49R8ndaagCOnwmj8QnbT1Gz/rie17UouD9Re5WxbzRVUGoftCu5IuqqtAM9+UC3fwfHCSJR1hkzNQh/2wdtg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- https://jquery.com -->
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" 
+		integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+		crossorigin="anonymous"></script>
+
+	<!-- https://github.com/nodeca/js-yaml -->
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"
+		integrity="sha512-CSBhVREyzHAjAFfBlIBakjoRUKp5h7VSweP0InR/pAJyptH7peuhCsqAI/snV+TwZmXZqoUklpXp6R6wMnYf5Q=="
+		crossorigin="anonymous"></script>
+
+    <!-- required by treant-js -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"
+        integrity="sha512-tBzZQxySO5q5lqwLWfu8Q+o4VkTcRGOeQGVQ0ueJga4A1RKuzmAu5HXDOXLEjpbKyV7ow9ympVoa6wZLEzRzDg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- https://github.com/fperucic/treant-js -->
+    <script
+          src="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.min.js"
+          integrity="sha512-ADpWKsaOuAegRSoUObE1si2VF6HQJyQR3Zy44l7s6YsGA6BnPIrIwN9uKJ0rsMhtDAMFqnGZhQXMJcsWSp40pA==" 
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/treant-js/1.0/Treant.css"
+        integrity="sha512-ySoXPqkgXC7K7IS5vOdi47uEpct2yJ3MkYVVVHiM7FOmdDnBUVSmB/D1ps2Pf6jBJnBMyh1EPJLpWh2uCzOLdg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+/* required LIB STYLES */
+/* .Treant se automatski dodaje na svaki chart conatiner */
+.Treant { position: relative; overflow: hidden; padding: 0 !important; }
+.Treant > .node,
+.Treant > .pseudo { position: absolute; display: block; visibility: hidden; }
+.Treant.Treant-loaded .node,
+.Treant.Treant-loaded .pseudo { visibility: visible; }
+.Treant > .pseudo { width: 0; height: 0; border: none; padding: 0; }
+.Treant .collapse-switch { width: 3px; height: 3px; display: block; border: 1px solid black; position: absolute; top: 1px; right: 1px; cursor: pointer; }
+.Treant .collapsed .collapse-switch { background-color: #868DEE; }
+.Treant > .node img {	border: none; float: left; }
+
+.chart { height: 670px; margin: 5px; width: 900px; margin: 5px auto; border: 3px solid #DDD; border-radius: 3px; }
+.Treant > .node {  }
+.Treant > p { font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; font-weight: bold; font-size: 12px; }
+.node-name { font-weight: bold;}
+
+.nodeExample1 {
+    padding: 2px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    background-color: #262626;
+    border: 1px solid #000;
+    width: 200px;
+    font-family: Tahoma;
+    font-size: 12px;
+    color: #ffffff;
+}
+
+.nodeExample1 img {
+    margin-right:  10px;
+}
+
+.Treant > a:link {
+    color: #ffffff;
+}
+
+.Treant > a:visited {
+    color: #ffffff;
+}
+
+.Treant > a:link:hover {
+    color: #636363;
+}
+    </style>
+</head>
+<body>
+
+<script>
+const base_url = (function(){
+    var arr_path = document.location.pathname.split('/');
+    arr_path.pop();
+    return arr_path.join('/') + '/'
+})(),
+
+loadConf = (filename, callback) => {
+	var url = base_url + filename;
+	var oReq = new XMLHttpRequest();
+	//oReq.addEventListener('load', callback);
+	oReq.open('GET', url);
+	oReq.onload = function(e){
+		this.status != 200 || callback(this.response);
+	};
+	oReq.send();
+};
+
+window.onload = function(){
+    loadConf('conf.yml', function(contents){
+        const data = jsyaml.load(contents).chart;
+
+        var chart = [];
+        chart.push(data.config);
+
+        _.each(data.nodes, (node, key) => {
+            if(typeof node.HTMLid == 'undefined'){
+                node.HTMLid = key;
+            }
+
+            // collect nodes
+            if(typeof node.parent !== 'undefined'){
+                node.parent_id = node.parent;
+                node.parent = data.nodes[node.parent_id];
+            }
+            chart.push(node);
+    	});
+
+        document.title = data.config.title;
+        new Treant(chart);
+    });
+};
+
+// ----
+</script>
+
+</div>
+    <div id="chart1" class="chart"></div>
+    <!--
+    Banner "Fork me on GitHub"
+    generated by: https://codepen.io/Rplus/pen/wKZOB
+    -->
+    <a href="https://github.com/alex-salnikov/tree-chart"
+        class="github-fork-ribbon"
+        data-ribbon="Fork me on GitHub"
+        title="Fork me on GitHub">Fork me on GitHub</a>
+</body>
+</html>
