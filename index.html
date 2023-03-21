@@ -122,14 +122,28 @@ loadConf = (filename, callback) => {
 	oReq.send();
 };
 
-window.onload = function(){
-    loadConf('conf.yml', function(contents){
-        const data = jsyaml.load(contents).chart;
 
-        var chart = [];
-        chart.push(data.config);
+class TreeYaml {
+    constructor(yaml) {
+        const data = jsyaml.load(yaml).chart;
 
-        _.each(data.nodes, (node, key) => {
+        this.config = data.config;
+
+        this.nodes = {};
+        this.chart = [];
+        this.chart.push(data.config);
+        
+        this._pickNodes(data);
+        _.each(this.nodes || {}, (node, key) => {
+            if(typeof node.parent_id !== 'undefined'){
+                node.parent = this.nodes[node.parent_id];
+            }
+            this.chart.push(node);
+        });
+    }
+
+    _pickNodes(data, parent_id) {
+        _.each(data.nodes || {}, (node, key) => {
             if(typeof node.HTMLid == 'undefined'){
                 node.HTMLid = key;
             }
@@ -137,13 +151,24 @@ window.onload = function(){
             // collect nodes
             if(typeof node.parent !== 'undefined'){
                 node.parent_id = node.parent;
-                node.parent = data.nodes[node.parent_id];
             }
-            chart.push(node);
+            else if(typeof parent_id !== 'undefined'){
+                node.parent_id = parent_id;
+            }
+            
+            this._pickNodes(node, key);
+            node.nodes && delete node.nodes;
+            this.nodes[key] = node;
     	});
+    }
+}
 
-        document.title = data.config.title;
-        new Treant(chart);
+
+window.onload = function(){
+    loadConf('conf2.yml', function(contents){
+        const yamlTree = new TreeYaml(contents);
+        document.title = yamlTree.config.title;
+        new Treant(yamlTree.chart);
     });
 };
 
