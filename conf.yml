@@ -11,44 +11,56 @@ chart:
     node:
       HTMLclass: nodeExample1
     title: Tree-Chart
+    favicon: icons/favicon.ico
   nodes:
+
     root:
       text:
-        name: Name 1
-        title: Title 1
-        contact: "Phone: 123-456"
+        name: Google
       image: images/1.png
       link:
         href: http://www.google.com
         target: _blank
       # HTMLid: root
       HTMLclass: light-gray
+
     node2:
       text:
-         name: Name 2
-         title: Title 2
+         name: Conf 1
+         title: Title 1
+      link:
+        href: '?conf.yml'
+        target: _self
       stackChildren: true
       image: images/1.png
       parent: root
       HTMLclass: light-gray
+
     node2_1:
       text:
-         name: Name 2_1
-         title: Title 2_1
+        name: Name 2_1
+        title: Title 2_2
+        contact: "Phone: 123-456"
       image: images/1.png
       parent: node2
       HTMLclass: gray
+
     node2_2:
       text:
-         name: Name 2_2
-         title: Title 2_2
+        name: Name 2_2
+        title: Title 2_2
+        contact: "Phone: 456-789"
       image: images/1.png
       parent: node2
       HTMLclass: gray
+
     node3:
       text:
-        name: Name 3
-        title: Title 3
+         name: Conf 2
+         title: Title 2
+      link:
+        href: '?conf2.yml'
+        target: _self
       image: images/1.png
       parent: root
       HTMLclass: light-gray

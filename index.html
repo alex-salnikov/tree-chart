@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
 	<title>(Tree-Chart)</title>
+    <link id="favicon" rel="icon" type="image/x-icon" href="favicon.ico">
     <!-- https://github.com/simonwhitaker/github-fork-ribbon-css -->
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css" />
@@ -44,6 +45,12 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <style>
+
+/*
+----------------------
+Treant CSS
+*/
+
 /* required LIB STYLES */
 /* .Treant se automatski dodaje na svaki chart conatiner */
 .Treant { position: relative; overflow: hidden; padding: 0 !important; }
@@ -56,10 +63,26 @@
 .Treant .collapsed .collapse-switch { background-color: #868DEE; }
 .Treant > .node img {	border: none; float: left; }
 
-.chart { height: 670px; margin: 5px; width: 900px; margin: 5px auto; border: 3px solid #DDD; border-radius: 3px; }
+.chart {
+    margin: 5px;
+    width: 1000px;
+    margin: 5px auto;
+    /*
+    height: 670px;
+    border: 3px solid #DDD;
+    border-radius: 3px;
+    */
+}
+
 .Treant > .node {  }
-.Treant > p { font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; font-weight: bold; font-size: 12px; }
-.node-name { font-weight: bold;}
+.Treant > p {
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-weight: bold;
+    font-size: 12px;
+}
+.node-name {
+    font-weight: bold;
+}
 
 .nodeExample1 {
     padding: 2px;
@@ -74,12 +97,15 @@
     color: #ffffff;
 }
 
+/*
 .nodeExample1 img {
     margin-right:  10px;
 }
+*/
 
 .Treant > a:link {
     color: #ffffff;
+    text-decoration: none;
 }
 
 .Treant > a:visited {
@@ -91,13 +117,50 @@
 }
 
 
-/* custom CSS */
+/* image thumbnails */
+a.node img, div.node img{
+    display: block;
+    max-width: 32px;
+    max-height: 64px;
+    width: auto;
+    height: auto;
+    margin:  5px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+/*
+----------------------
+Custom CSS
+*/
 .gray {
     background-color: #909090;
 }
 
 .light-gray {
     background-color: #D3D3C7;
+}    
+
+
+/*
+----------------------
+Footer
+*/
+.footer {
+    width: 1000px;
+    margin: 5px auto;
+    /*
+    height: 670px;
+    border: 3px solid #DDD;
+    border-radius: 3px;
+    */
+}
+
+.footer, a {
+    font-family: Tahoma;
+    font-size: 10px;
+    color: #000000;
 }
 
     </style>
@@ -124,11 +187,8 @@ loadConf = (filename, callback) => {
 
 
 class TreeYaml {
-    constructor(yaml) {
-        const data = jsyaml.load(yaml).chart;
-
+    constructor(data) {
         this.config = data.config;
-
         this.nodes = {};
         this.chart = [];
         this.chart.push(data.config);
@@ -165,9 +225,19 @@ class TreeYaml {
 
 
 window.onload = function(){
-    loadConf('conf2.yml', function(contents){
-        const yamlTree = new TreeYaml(contents);
-        document.title = yamlTree.config.title;
+    // retrieve config path from url-hash
+    const confPath = document.location.search.split('?').pop() || 'conf.yml';
+
+    // load config and render tree
+    loadConf(confPath, function(contents){
+        const data = jsyaml.load(contents).chart;
+        const yamlTree = new TreeYaml(data);
+        
+        // update document attributes
+        document.title = yamlTree.config.title || '';
+        $('#favicon').attr('href', yamlTree.config.favicon || '');
+        
+        // render tree
         new Treant(yamlTree.chart);
     });
 };
